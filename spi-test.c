@@ -48,21 +48,21 @@ static int toggle_cs = 0;
 static int block_length = 0;
 static int quiet = 0;
 
-static void add_transfer(char * data, int len)
+static void add_transfer(uint32_t * data, int len)
 {
 	struct spi_ioc_transfer *xfr;
-	char *txbuf = malloc(len);
-	char *rxbuf = malloc(len);
+	uint32_t *txbuf = malloc(len);
+	uint32_t *rxbuf = malloc(len);
 
-	memcpy(txbuf, data, len);
-	memset(rxbuf, 0xff, len);
+	memcpy(txbuf, data, len * sizeof(uint32_t));
+	memset(rxbuf, 0xff, len * sizeof(uint32_t));
 	
 	ntransfers += 1;
 	spi_xfrs = realloc(spi_xfrs, sizeof(*spi_xfrs) * ntransfers);
 	xfr = &spi_xfrs[ntransfers - 1];
 
-	xfr->tx_buf = (uint32_t)txbuf;
-	xfr->rx_buf = (uint32_t)rxbuf;
+	xfr->tx_buf = (unsigned long) txbuf;
+	xfr->rx_buf = (unsigned long) rxbuf;
 	xfr->len = len;
 	xfr->speed_hz = speed;
 	xfr->delay_usecs = delay;
@@ -80,11 +80,11 @@ static void show_spi_xfrs(void)
 		xfr = &spi_xfrs[i];
 		printf("%d", xfr->len);
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %08X", ((unsigned char *)(intptr_t)xfr->tx_buf)[j]);
+			printf(" %08X", ((uint32_t *)(intptr_t)xfr->tx_buf)[j]);
 		}
 		printf("\n");
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %08X", ((unsigned char *)(intptr_t)xfr->rx_buf)[j]);
+			printf(" %08X", ((uint32_t *)(intptr_t)xfr->rx_buf)[j]);
 		}
 		printf("\n\n");
 	}
@@ -199,7 +199,7 @@ void parse_transfer(char *arg)
 {
 	int len = 0;
 	char *value;
-	char buf[8192];
+	uint32_t buf[8192];
 	for (value = strtok(arg, ","); value; value = strtok(NULL, ",")) {
 		if (*value == 'b') {
 			value++;
@@ -229,7 +229,7 @@ void parse_transfer(char *arg)
 
 void make_bulk_transfer(int len)
 {
-	uint8_t *buf = malloc(len);
+	uint32_t *buf = malloc(len);
 	if (NULL == buf)
 		pabort("malloc failed");
 	memset(buf, 0xCB, len);
