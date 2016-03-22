@@ -61,8 +61,8 @@ static void add_transfer(char * data, int len)
 	spi_xfrs = realloc(spi_xfrs, sizeof(*spi_xfrs) * ntransfers);
 	xfr = &spi_xfrs[ntransfers - 1];
 
-	xfr->tx_buf = (unsigned long)txbuf;
-	xfr->rx_buf = (unsigned long)rxbuf;
+	xfr->tx_buf = (uint32_t)txbuf;
+	xfr->rx_buf = (uint32_t)rxbuf;
 	xfr->len = len;
 	xfr->speed_hz = speed;
 	xfr->delay_usecs = delay;
@@ -78,14 +78,13 @@ static void show_spi_xfrs(void)
 
 	for (i = 0; i < ntransfers; ++i) {
 		xfr = &spi_xfrs[i];
+		printf("%d", xfr->len);
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %X",
-			       ((unsigned char *)(intptr_t)xfr->tx_buf)[j]);
+			printf(" %08X", ((unsigned char *)(intptr_t)xfr->tx_buf)[j]);
 		}
 		printf("\n");
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %X",
-			       ((unsigned char *)(intptr_t)xfr->rx_buf)[j]);
+			printf(" %08X", ((unsigned char *)(intptr_t)xfr->rx_buf)[j]);
 		}
 		printf("\n\n");
 	}
