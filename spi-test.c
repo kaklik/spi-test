@@ -79,12 +79,12 @@ static void show_spi_xfrs(void)
 	for (i = 0; i < ntransfers; ++i) {
 		xfr = &spi_xfrs[i];
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %02X",
+			printf(" %X",
 			       ((unsigned char *)(intptr_t)xfr->tx_buf)[j]);
 		}
 		printf("\n");
 		for (j = 0; j < xfr->len; ++j) {
-			printf(" %02X",
+			printf(" %X",
 			       ((unsigned char *)(intptr_t)xfr->rx_buf)[j]);
 		}
 		printf("\n\n");
