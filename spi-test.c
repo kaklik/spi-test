@@ -30,6 +30,7 @@
 #include <linux/spi/spidev.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define SPI_IOC_MESSAGE_32(N) _IOW(SPI_IOC_MAGIC, 0, uint32_t[SPI_MSGSIZE(N)])
 
 static void pabort(const char *s)
 {
@@ -93,7 +94,7 @@ static void show_spi_xfrs(void)
 static void transfer(int fd)
 {
 	int ret;
-	ret = ioctl(fd, SPI_IOC_MESSAGE(ntransfers), spi_xfrs);
+	ret = ioctl(fd, SPI_IOC_MESSAGE_32(ntransfers), spi_xfrs);
 	if (ret < 1)
 		pabort("can't send spi message");
 }
